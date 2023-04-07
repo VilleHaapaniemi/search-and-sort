@@ -20,5 +20,6 @@ Post: If an entry in the_list has key equal to target, then return
       the_list.retrieve(position, data);
       if (data == target) return success;
    }
+   position = -1;
    return not_present;
 }
