@@ -78,6 +78,7 @@ int main()
         cout << "**********************************************\n";
         cout << "1. Sequential search\n";
         cout << "2. Binary search\n";
+        cout << "3. Search performance comparison (Sequential vs Binary)\n";
         cout << "6. Quit\n";
         cin >> choice;
 
@@ -88,14 +89,9 @@ int main()
             break;
         case 2:
             binary_program();
-            char choice;
-            cout << "Do you want perform performance comparison (sequential/binary) searches? y/n: ";
-            cin >> choice;
-            if (choice == 'y')
-            {
-                search_performance_comparison();
-            }
             break;
+        case 3:
+            search_performance_comparison();
         }
     }
 

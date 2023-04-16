@@ -80,6 +80,8 @@ void print_out(const std::string &status, double elapsed_time, int comparisons, 
 
 void search_performance_comparison()
 {
+   cout << "Data inserted to lists and target to find are random generated.\n";
+   cout << "List sizes are 50 000\n";
    // Initialize new sequential and binary lists. Ordered list inherits from List and insert numbers on order.
    List<Record> sequential_list;
    Ordered_list binary_list;
