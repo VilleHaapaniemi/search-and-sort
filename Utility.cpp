@@ -3,8 +3,8 @@
 // #include "Record.h"
 #include "List.h"
 #include "Ordered_list.h"
+//#include "Random.h"
 #include "Utility.h"
-#include "Random.h"
 #include "Timer.h"
 
 using std::cout, std::cin, std::endl, std::string;
@@ -80,15 +80,15 @@ void print_out(const std::string &status, double elapsed_time, int comparisons, 
 
 void search_performance_comparison()
 {
-   cout << "Data inserted to lists and target to find are random generated.\n";
-   cout << "List sizes are 50 000\n";
+   cout << "\nData inserted to lists and target to find are random generated.\n";
+   cout << "List sizes are 10 000\n";
    // Initialize new sequential and binary lists. Ordered list inherits from List and insert numbers on order.
    List<Record> sequential_list;
    Ordered_list binary_list;
 
    // Insert same random numbers on lists.
-   Random random;
-   int list_size = 50000;
+   Random random(0);
+   int list_size = 10000;
    for (int i = 0 ; i < list_size ; i++)
    {
       int random_num = random.random_integer(1, list_size);
@@ -96,10 +96,10 @@ void search_performance_comparison()
       binary_list.insert(random_num);
    }
 
-   test_search(10, sequential_list);
+   test_search(10, sequential_list, binary_list, random);
 }
 
-void test_search(int searches, List<Record> &the_list)
+void test_search(int searches, List<Record> &the_list, Ordered_list &binary_list, Random &random)
    /*
 
 Pre:  None.
@@ -116,25 +116,81 @@ Uses: Methods of the classes List, Random, and Timer,
            << " The number of list entries must exceed 0." << endl;
       return;
    }
-   int i, target, found_at;
+   int i, found_at;
+   int num_not_find = list_size + 1;
    Key::comparisons = 0;
-   Random number;
+   //Random number(0);
    Timer clock;
+   int target_found[searches];
+   int target_not_found[searches];
 
+   // Generate random numbers to array so target numbers are same for both searches.
+   int num;
+   for (int i = 0 ; i < searches ; i++)
+   {
+      // Random number must be found from list.
+      while(true)
+      {
+         num = random.random_integer(1, list_size * 2);
+         if (binary_search(binary_list, num, found_at) == success)
+            break;
+      }
+      target_found[i] = num;
+   }
+
+   for (int i = 0 ; i < searches ; i++)
+   {
+      // Random number must be found from list.
+      while(true)
+      {
+         num = random.random_integer(1, list_size * 2);
+         if (binary_search(binary_list, num, found_at) == not_present)
+            break;
+      }
+      target_not_found[i] = num;
+   }
+
+   // Sequential performance searches.
+   Key::comparisons = 0;
+   clock.reset();
+   cout << "\nSequential search\n";
+   cout << "****************************\n";
    for (i = 0; i < searches; i++) {
-      target = number.random_integer(1, list_size);
-      if (sequential_search(the_list, target, found_at) == not_present)
-         cout << "Error: Failed to find expected target " << target << endl;
+      if (sequential_search(the_list, target_found[i], found_at) == not_present)
+         cout << "Error: Failed to find expected target " << target_found[i] << endl;
    }
    print_out("Successful", clock.elapsed_time(), Key::comparisons, searches);
+   cout << endl;
 
    Key::comparisons = 0;
    clock.reset();
    for (i = 0; i < searches; i++) {
-      target = list_size + 1;
-      if (sequential_search(the_list, target, found_at) == success)
-         cout << "Error: Found unexpected target " << target
+      if (sequential_search(the_list, target_not_found[i], found_at) == success)
+         cout << "Error: Found unexpected target " << target_not_found[i]
               << " at " << found_at << endl;
    }
    print_out("Unsuccessful", clock.elapsed_time(), Key::comparisons, searches);
+   cout << endl;
+
+   // Binary performance searches.
+   cout << "Binary search\n";
+   cout << "****************************\n";
+   Key::comparisons = 0;
+   clock.reset();
+   for (i = 0; i < searches; i++) {
+      if (binary_search(binary_list, target_found[i], found_at) == not_present)
+         cout << "Error: Failed to find expected target " << target_found[i] << endl;
+   }
+   print_out("Successful", clock.elapsed_time(), Key::comparisons, searches);
+   cout << endl;
+
+   Key::comparisons = 0;
+   clock.reset();
+   for (i = 0; i < searches; i++) {
+      if (binary_search(binary_list, target_not_found[i], found_at) == success)
+         cout << "Error: Found unexpected target " << target_not_found[i]
+              << " at " << found_at << endl;
+   }
+   print_out("Unsuccessful", clock.elapsed_time(), Key::comparisons, searches);
+   cout << endl;
 }

@@ -92,6 +92,7 @@ int main()
             break;
         case 3:
             search_performance_comparison();
+            break;
         }
     }
 
